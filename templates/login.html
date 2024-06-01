@@ -1,0 +1,36 @@
+{% extends "header.html" %}
+{% block content %}
+<div class="container" id="login">
+    <div class="row justify-content-center mb-9">
+        <div class="col-md-8 py-3 py-md-0" id="side1">
+            <h3 class="text-center mb-4">Login to your Account</h3>
+            <div class="card">
+                <div class="card-body mb-6">
+                    <form method="POST">
+                        {{ form.hidden_tag() }}
+                        <div class="form-group mb-3">
+                            {{ form.email.label(class="form-label") }}
+                            {{ form.email(class="form-control") }}
+                            {% for error in form.email.errors %}
+                            <p class="error text-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            {{ form.password.label(class="form-label") }}
+                            {{ form.password(class="form-control", type="password") }}
+                            {% for error in form.password.errors %}
+                            <p class="error text-danger">{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                            <button type="submit" class="btn btn-primary w-[90px]">Login</button>
+
+                        <p style="margin-top: 5px;">Don't have an account? <a href="register">Register</a> </p>
+                    </form>
+                </div>
+            </div>
+            <br>
+        </div>
+    </div>
+</div>
+{% endblock %}

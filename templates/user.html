@@ -1,0 +1,116 @@
+{% extends "header.html" %}
+
+{% block content %}
+<div class="outer-divs">
+    <div class="cart-container">
+        <div class="cart-header">
+            Your Cart
+        </div>
+        <div class="cart-items">
+            {% for item in cart_items %}
+            <div class="cart-item" data-id="{{ item.id }}">
+                <img src="{{ item.image_url }}" alt="Product Image">
+                <div class="cart-item-details">
+                    <p class="cart-item-title">{{ item.name }}</p>
+                    <div class="cart-item-quantity">
+                        <button class="quantity-decrease"><i class="fa fa-minus"></i></button>
+                        <span>{{ item.quantity }}</span>
+                        <button class="quantity-increase"><i class="fa fa-plus"></i></button>
+                    </div>
+                </div>
+                <button class="cart-item-delete"><i class="fa fa-trash"></i></button>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total" id="total-price">
+                Total: ${{ cart_items | sum(attribute='price') }}
+            </div>
+            <button class="cart-proceed" onclick="alert('paid successfully')">Proceed to Payment</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const cartItemsContainer = document.querySelector('.cart-items');
+        const totalPriceElement = document.getElementById('total-price');
+
+        // Function to update the cart UI
+        const updateCartUI = (cartItems) => {
+            cartItemsContainer.innerHTML = '';
+            if (cartItems.length === 0) {
+                cartItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                totalPriceElement.innerText = 'Total: $0.00';
+                return;
+            }
+            let totalPrice = 0;
+            cartItems.forEach(item => {
+                const cartItemDiv = document.createElement('div');
+                cartItemDiv.className = 'cart-item';
+                cartItemDiv.setAttribute('data-id', item.id);
+                cartItemDiv.innerHTML = `
+                    <img src="${item.image_url}" alt="Product Image">
+                    <div class="cart-item-details">
+                        <p class="cart-item-title">${item.name}</p>
+                        <div class="cart-item-quantity">
+                            <button class="quantity-decrease"><i class="fa fa-minus"></i></button>
+                            <span>${item.quantity}</span>
+                            <button class="quantity-increase"><i class="fa fa-plus"></i></button>
+                        </div>
+                    </div>
+                    <button class="cart-item-delete"><i class="fa fa-trash"></i></button>
+                `;
+                cartItemsContainer.appendChild(cartItemDiv);
+                totalPrice += item.price * item.quantity;
+            });
+            totalPriceElement.innerText = `Total: $${totalPrice.toFixed(2)}`;
+
+            // Add delete event listeners to each delete button
+            const deleteButtons = document.querySelectorAll('.cart-item-delete');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const cartItemDiv = e.target.closest('.cart-item');
+                    const itemId = cartItemDiv.getAttribute('data-id');
+                    // console.log("Deleting item with ID:", itemId); // Debug log
+                    deleteCartItem(itemId);
+                });
+            });
+        };
+
+        // Retrieve cart items from localStorage
+        const storedCartItems = localStorage.getItem('cart');
+        const cartItems = JSON.parse(storedCartItems) || [];
+
+        // Send cart items to the Flask backend
+        fetch('/cart_data', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ cart_items: cartItems })
+        })
+        .then(response => response.text())
+        .then(html => {
+            // Replace the current document content with the new HTML
+            document.documentElement.innerHTML = html;
+            updateCartUI(cartItems);
+        });
+
+         // Initial UI update
+         updateCartUI(cartItems);
+
+        const deleteCartItem = (id) => {
+            let cartItems1 = JSON.parse(localStorage.getItem('cart')) || [];
+            cartItems1 = cartItems1.filter(item => parseInt(item.id) !== parseInt(id));
+            localStorage.setItem('cart', JSON.stringify(cartItems1));
+            // window.location.reload()
+            
+            updateCartUI(cartItems1);
+        };
+
+       
+    });
+  
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+<form method="POST">
+    {{ form.hidden_tag() }}
+
+    {{ form.name.label(class="form-label") }}
+    {{ form.name(class="form-control") }}
+    {% for error in form.name.errors %}
+    <p class="error">{{ error }}</p>
+    {% endfor %}
+
+    {{ form.email.label(class="form-label") }}
+    {{ form.email(class="form-control") }}
+    {% for error in form.email.errors %}
+    <p class="error">{{ error }}</p>
+    {% endfor %}
+
+    {{ form.submit(class="btn btn-primary") }}
+</form>
+
+<br>
+
+<p>Users:</p>
+{% for our_user in our_users %}
+    <p>{{ our_user.name }} - {{ our_user.email }}</p>
+{% endfor %}
