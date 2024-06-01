@@ -8,17 +8,18 @@
         </div>
         <div class="cart-items">
             {% for item in cart_items %}
+            {{item}}
             <div class="cart-item" data-id="{{ item.id }}">
-                <img src="{{ item.image_url }}" alt="Product Image">
+                <img src="{{ item.image }}" alt="Product Image">
                 <div class="cart-item-details">
                     <p class="cart-item-title">{{ item.name }}</p>
                     <div class="cart-item-quantity">
-                        <button class="quantity-decrease"><i class="fa fa-minus"></i></button>
+                        <button class="quantity-decrease" data-id="{{ item.id }}"><i class="fa fa-minus"></i></button>
                         <span>{{ item.quantity }}</span>
-                        <button class="quantity-increase"><i class="fa fa-plus"></i></button>
+                        <button class="quantity-increase" data-id="{{ item.id }}"><i class="fa fa-plus"></i></button>
                     </div>
                 </div>
-                <button class="cart-item-delete"><i class="fa fa-trash"></i></button>
+                <button class="cart-item-delete" data-id="{{ item.id }}"><i class="fa fa-trash"></i></button>
             </div>
             {% endfor %}
         </div>
@@ -54,12 +55,12 @@
                     <div class="cart-item-details">
                         <p class="cart-item-title">${item.name}</p>
                         <div class="cart-item-quantity">
-                            <button class="quantity-decrease"><i class="fa fa-minus"></i></button>
+                            <button class="quantity-decrease" data-id="${item.id}"><i class="fa fa-minus"></i></button>
                             <span>${item.quantity}</span>
-                            <button class="quantity-increase"><i class="fa fa-plus"></i></button>
+                            <button class="quantity-increase" data-id="${item.id}"><i class="fa fa-plus"></i></button>
                         </div>
                     </div>
-                    <button class="cart-item-delete"><i class="fa fa-trash"></i></button>
+                    <button class="cart-item-delete" data-id="${item.id}"><i class="fa fa-trash"></i></button>
                 `;
                 cartItemsContainer.appendChild(cartItemDiv);
                 totalPrice += item.price * item.quantity;
@@ -70,10 +71,26 @@
             const deleteButtons = document.querySelectorAll('.cart-item-delete');
             deleteButtons.forEach(button => {
                 button.addEventListener('click', (e) => {
-                    const cartItemDiv = e.target.closest('.cart-item');
-                    const itemId = cartItemDiv.getAttribute('data-id');
-                    // console.log("Deleting item with ID:", itemId); // Debug log
+                    const itemId = e.target.closest('button').getAttribute('data-id');
                     deleteCartItem(itemId);
+                });
+            });
+
+            // Add event listeners to quantity increase/decrease buttons
+            const increaseButtons = document.querySelectorAll('.quantity-increase');
+            const decreaseButtons = document.querySelectorAll('.quantity-decrease');
+
+            increaseButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.closest('button').getAttribute('data-id');
+                    updateCartItemQuantity(itemId, 1);
+                });
+            });
+
+            decreaseButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const itemId = e.target.closest('button').getAttribute('data-id');
+                    updateCartItemQuantity(itemId, -1);
                 });
             });
         };
@@ -82,35 +99,28 @@
         const storedCartItems = localStorage.getItem('cart');
         const cartItems = JSON.parse(storedCartItems) || [];
 
-        // Send cart items to the Flask backend
-        fetch('/cart_data', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ cart_items: cartItems })
-        })
-        .then(response => response.text())
-        .then(html => {
-            // Replace the current document content with the new HTML
-            document.documentElement.innerHTML = html;
-            updateCartUI(cartItems);
-        });
-
-         // Initial UI update
-         updateCartUI(cartItems);
+        // Initial UI update
+        updateCartUI(cartItems);
 
         const deleteCartItem = (id) => {
-            let cartItems1 = JSON.parse(localStorage.getItem('cart')) || [];
-            cartItems1 = cartItems1.filter(item => parseInt(item.id) !== parseInt(id));
-            localStorage.setItem('cart', JSON.stringify(cartItems1));
-            // window.location.reload()
-            
-            updateCartUI(cartItems1);
+            let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            cartItems = cartItems.filter(item => parseInt(item.id) !== parseInt(id));
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+            updateCartUI(cartItems);
         };
 
-       
+        const updateCartItemQuantity = (id, change) => {
+            let cartItems = JSON.parse(localStorage.getItem('cart')) || [];
+            cartItems = cartItems.map(item => {
+                if (parseInt(item.id) === parseInt(id)) {
+                    item.quantity += change;
+                    if (item.quantity < 1) item.quantity = 1; // Ensure quantity doesn't go below 1
+                }
+                return item;
+            });
+            localStorage.setItem('cart', JSON.stringify(cartItems));
+            updateCartUI(cartItems);
+        };
     });
-  
 </script>
 {% endblock %}

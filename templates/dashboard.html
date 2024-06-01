@@ -10,8 +10,6 @@
         <br>Lorem ipsum dolor sit amet consectetur.
       </p>
       <div class="btn"><button>Shop Now</button></div>
-
-
     </div>
     <div class="img">
       <img  src="{{ image_urls }}" alt="">        
@@ -25,7 +23,7 @@
         {% for x in products %}
         <div class="col-md-3 py-3 py-md-0 mb-4">
           <div class="card">
-            <img src=" {{ x.image_uri }}" alt="image" height="250px">
+            <img src=" {{ x.image_uri }}" alt="image" class="image-card">
             <div class="card-body">
               <h3 class="text-center">{{ x.name }}</h3>
               <p class="text-center">{{ x.description }}</p>
@@ -39,13 +37,12 @@
               </div>
               <div style="display: flex; flex-direction: column; justify-content: center; align-items: center; margin-top: 20px;">
                 <h3>$ {{ x.price }} <span><li class="fa-solid fa-cart-shopping"></li></span></h3>
-                <button class="btn btn-primary" onclick="addToCart('{{ x.id }}', '{{ x.name }}', '{{ x.description }}', '{{ x.price }}')">Add to cart</button>
+                <button class="btn btn-primary" onclick="addToCart('{{ x.id }}', '{{ x.name }}', '{{ x.description }}', '{{ x.price }}', '{{ x.image_uri }}')">Add to cart</button>
               </div>
               </div>
           </div>
         </div>
         {% endfor %}
-        <h3>No Data available for selected one</h3>
         {% endif %}
         
         
@@ -53,41 +50,22 @@
 </div>
 <script>
   let cartItems = []
-  function addToCart(id, name, description, price) {
+  function addToCart(id, name, description, price, image) {
     // Create an object for the item
     var storedCartItems = localStorage.getItem('cart');
     var cartItems = storedCartItems ? JSON.parse(storedCartItems) : [];
     var item = {
         id: id,
         name: name,
+        image: image,
         description: description,
         price: price
     };
 
     // Push the item object to the cartItems array
     cartItems.push(item);
-
-    // Save the cartItems JSON string in a cookie named "cart"
     localStorage.setItem('cart', JSON.stringify(cartItems));
-
-    // Optionally, you can log the cartItems array to the console to see the updated cart
     console.log(localStorage.getItem('cart'));
-
-    // var storedCartItems1 = localStorage.getItem('cart');
-    // if (storedCartItems1) {
-    //   var cartItems = JSON.parse(storedCartItems1);
-    //   const notificationNumber = document.createElement('span');
-    //   notificationNumber.className = 'notification-number';
-    //   notificationNumber.innerText = cartItems.length;
-    //   document.getElementById('notification').appendChild(notificationNumber);        // Parse the JSON string back to an object
-    //     console.log("total data",cartItems.length); // You can now work with 'cartItems' as a JavaScript object
-    // } else {
-    //     console.log("No items in cart.");
-    // }
-
 }
-
-
 </script>
-
-     {% endblock %}
+{% endblock %}

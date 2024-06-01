@@ -1,0 +1,68 @@
+{% extends "header.html" %}
+{% block content %}
+
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background-color: #f8f9fa;
+        margin: 20px;
+    }
+    h1 {
+        color: #343a40;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+        background-color: #fff;
+        box-shadow: 0 2px 3px rgba(0,0,0,0.1);
+    }
+    th, td {
+        padding: 12px 15px;
+        text-align: left;
+    }
+    th {
+        background-color: #007bff;
+        color: #fff;
+    }
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+    tr:hover {
+        background-color: #ddd;
+    }
+    p {
+        font-size: 18px;
+        color: #343a40;
+    }
+</style>
+
+<h1>Past Orders</h1>
+{% if orders %}
+    <table>
+        <tr>
+            <th>Order ID</th>
+            <th>Product Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Order Date</th>
+            <th>Customer Email</th>
+        </tr>
+        {% for order in orders %}
+        {% if order.customer_email == user_email %}
+            <tr>
+                <td>{{ order.id }}</td>
+                <td>{{ order.pname }}</td>
+                <td>{{ order.pdescription }}</td>
+                <td>${{ "%.2f"|format(order.pprice) }}</td>
+                <td>{{ order.porder_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                <td>{{ order.customer_email }}</td>
+            </tr>
+        {% endif %}
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No past orders found.</p>
+{% endif %}
+
+{% endblock %}

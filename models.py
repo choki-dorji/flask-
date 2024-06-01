@@ -29,6 +29,7 @@ class Order1(db.Model):
     customer_email = db.Column(db.String(100), nullable=False)
     pname = db.Column(db.String(100), nullable=False)
     pdescription = db.Column(db.Text, nullable=False)
+    pimage = db.Column(db.Text, nullable=False)
     pprice = db.Column(db.Float, nullable=False)
     porder_date = db.Column(db.DateTime, nullable=False, default=db.func.current_timestamp())
 

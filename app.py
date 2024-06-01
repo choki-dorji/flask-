@@ -27,9 +27,12 @@ create_tables()
 
 # create route decorato
 
-# @app.route("/user/<name>")
-# def user(name):
-#     return render_template("user.html", name=name)
+@app.route("/past")
+def past():
+    user_id = request.cookies.get('user_id')
+    user_email = request.cookies.get('user_email')
+    orders = Order1.query.all()
+    return render_template("past-order.html", orders=orders, user_email=user_email)
 
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -143,6 +146,7 @@ def cart_data():
             # user_id=user_id,
             pname=item['name'],
             pdescription=item['description'],
+            pimage=item["image"],
             pprice=item['price'],
             porder_date=datetime.utcnow() # Use current date and time
         )

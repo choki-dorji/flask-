@@ -1,0 +1,46 @@
+.image-card{
+     height: 250px;
+}
+
+@media (max-width: 768px) {
+    .image-card{
+        height: 300px;
+   }
+    .col-md-3 {
+      flex: 0 0 100%;
+      max-width: 100%;
+    }
+  
+    .card {
+      margin: 10px 0;
+    }
+  
+    .card-body {
+      padding: 10px;
+    }
+  
+    h1 {
+      font-size: 24px;
+    }
+  
+    .btn {
+      padding: 10px 15px;
+      font-size: 14px;
+    }
+  }
+  
+  /* Extra small devices (phones, less than 576px) */
+  @media (max-width: 576px) {
+    .home .content h1 {
+      font-size: 20px;
+    }
+  
+    .home .content p {
+      font-size: 14px;
+    }
+  
+    .btn {
+      padding: 8px 10px;
+      font-size: 12px;
+    }
+  }
